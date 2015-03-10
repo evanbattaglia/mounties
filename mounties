@@ -1,0 +1,17 @@
+#!/usr/bin/env coffee
+
+mounties = require './lib/mounties.coffee'
+DB = require './lib/db.coffee'
+Q = require 'q'
+path = require 'path'
+
+Q.spread([
+  DB.load(path.resolve __dirname, 'mounties.json'),
+  mounties.qAllFromSite()
+], (db, newClimbs) ->
+  db.merge(newClimbs)
+  db.save()
+).done()
+
+
+
