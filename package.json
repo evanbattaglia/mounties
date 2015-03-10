@@ -1,0 +1,22 @@
+{
+  "name": "mounties",
+  "preferGlobal": false,
+  "version": "0.1.0",
+  "author": "Evan Battaglia <battaglia.evan@gmail.com.com>",
+  "dependencies": {
+    "cheerio": "^0.18.0",
+    "jquery": "2.1.3",
+    "q": "^1.2.0",
+    "q-io": "^1.11.6",
+    "underscore": "1.6.0"
+  },
+  "devDependencies": {
+    "chai": "~1.4.2",
+    "coffee-script": "1.7.1",
+    "grunt": "0.4.5",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-mocha-test": "0.11.0",
+    "load-grunt-tasks": "0.6.0",
+    "mocha": "1.17.1"
+  }
+}
