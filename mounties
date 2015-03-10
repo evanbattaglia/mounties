@@ -3,15 +3,45 @@
 mounties = require './lib/mounties.coffee'
 DB = require './lib/db.coffee'
 Q = require 'q'
+FS
 path = require 'path'
+process = require 'process'
+readline = require './lib/readline.coffee'
 
-Q.spread([
-  DB.load(path.resolve __dirname, 'mounties.json'),
-  mounties.qAllFromSite()
-], (db, newClimbs) ->
-  db.merge(newClimbs)
-  db.save()
-).done()
+MOUNTIES_DB = path.resolve __dirname, 'mounties.json'
+
+cmd = process.argv[0]
+if cmd == 'pull'
+  Q.spread([
+    DB.load(MOUNTIES_DB),
+    mounties.qAllFromSite()
+  ], (db, newClimbs) ->
+    db.merge(newClimbs)
+    db.save()
+  ).done()
+else if cmd == 'ignore'
+  DB.load(MOUNTIES_DB).then (db) ->
+    i = 0
+    climbs = db.unignored()
+    # TODO use q-flow.map etc here and in mounties.coffee
+    keepGoing = ->
+      climb = climbs[i]
+      console.log JSON.stringify climb, null, 2
+      console.log 'ignore? (y/n) '
+      readline().then (line) ->
+        i += 1
+        db.ignore(climb.id)  if line[0] == 'y'
+        keepGoing() if climbs[i]
+    keepGoing()
+  .done()
+
+
+else
+  console.log 'available commands:'
+  console.log '  pull'
+  console.log '  show'
+  console.log '  ignore'
+
 
 
 
