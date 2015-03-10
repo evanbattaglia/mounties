@@ -25,13 +25,17 @@ module.exports = class DB
   save: ->
     FS.write(@filename, JSON.stringify @climbs)
 
-  unignored: -> @climbs.filter (climb) -> climb.ignore
-  ignored: -> @climbs.filter (climb) -> ! climb.ignore
+  ignored: -> @climbs.filter (climb) -> climb.status == 'ignore'
+  kept: -> @climbs.filter (climb) -> climb.status == 'keep'
+  unseen: -> @climbs.filter (climb) -> ! climb.status
+
+  findById: (id) ->
+    _.find @climbs, (climb) -> climb.id == id
 
   ignore: (args...) ->
-    _.flatten(args).forEach (id) -> @climbs(id).ignore = true
-
-  unignore: (args...) ->
-    _.flatten(args).forEach (id) -> @climbs(id).ignore = false
-
+    _.flatten(args).forEach (id) => @findById(id).status = 'ignore'
+  keep: (args...) ->
+    _.flatten(args).forEach (id) => @findById(id).status = 'keep'
+  unsee: (args...) ->
+    _.flatten(args).forEach (id) => delete @findById(id).status
 
