@@ -30,29 +30,26 @@ mounties = module.exports =
     @parse fs.readFileSync fn
 
   qFromSite: (start) ->
-    #uri = "https://www.mountaineers.org/explore/activities/@@faceted_query?b_start%5B%5D=#{start}&c4%5B%5D=Climbing"
-    #HTTP.request(uri: uri).then (response) -> @parse response.body
-    if start > 200
-      Q([])
-    else
-      Q([start])
+    uri = "https://www.mountaineers.org/explore/activities/@@faceted_query?b_start%5B%5D=#{start}&c4%5B%5D=Climbing"
+    HTTP.read(url: uri).then @parse
 
-  qAllFromSite: (initialResults = [], startingFrom = 0) ->
-    @qFromSite(startingFrom).then (results) =>
-      if results.length == 0
-        initialResults
-      else
-        initialResults.push.apply initialResults, results
-        @qAllFromSite(initialResults, startingFrom + 50)
-
+  qAllFromSite: ->
+    results = []
+    startFrom = 0
+    keepGoing = =>
+      @qFromSite(startFrom).then (page) ->
+        Array.prototype.push.apply results, page
+        startFrom += 50
+        if page.length < 50 then results else keepGoing()
+    keepGoing()
 
 # GET THE HTML
 #console.log JSON.stringify mounties.fromFile "temp.html"
 
-mounties.qAllFromSite().then (res) ->
-  console.log "OK"
-  console.log res
-.done()
+#mounties.qAllFromSite().then (res) ->
+#  console.log "OK"
+#  console.log res
+#.done()
 
 
 
